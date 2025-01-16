@@ -25,6 +25,16 @@ class ApiService {
     return response;
   }
 
+  Future<http.Response> patch(String endpoint,
+      {Map<String, dynamic>? data}) async {
+    final headers = await _buildHeaders();
+    final uri = Uri.parse('$_baseUrl$endpoint');
+    final response =
+        await http.patch(uri, headers: headers, body: jsonEncode(data));
+    _handleResponse(response);
+    return response;
+  }
+
   /// Perform a POST request
   Future<http.Response> post(String endpoint,
       {Map<String, dynamic>? data}) async {

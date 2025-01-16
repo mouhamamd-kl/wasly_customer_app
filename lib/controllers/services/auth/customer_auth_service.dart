@@ -13,7 +13,7 @@ class CustomerAuthService {
   Future<Customer> login(String email, String password) async {
     try {
       final response = await _apiService.post('/customer/login', data: {
-        'email': email.trim(), // Add trim() for safety
+        'email': email, // Add trim() for safety
         'password': password,
       });
 
@@ -22,7 +22,7 @@ class CustomerAuthService {
         await _authController.login(data['token']);
         return Customer.fromJson(data['account']);
       } else {
-        final message = jsonDecode(response.body)['message'] ?? 'Login failed';
+        final message = jsonDecode(response.body)['msg'] ?? 'Login failed';
         throw Exception(message);
       }
     } catch (e) {
@@ -79,6 +79,40 @@ class CustomerAuthService {
       }
     } catch (e) {
       throw Exception('Failed to get customer info: ${e.toString()}');
+    }
+  }
+
+  Future<Customer> updateCustomer(
+      int id, Map<String, dynamic> updateData) async {
+    try {
+      final response =
+          await _apiService.patch('/customer/$id', data: updateData);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)['data'];
+        return Customer.fromJson(data);
+      } else {
+        final message = jsonDecode(response.body)['msg'] ?? 'Update failed';
+        throw Exception(message);
+      }
+    } catch (e) {
+      throw Exception('Update failed: ${e.toString()}');
+    }
+  }
+
+  Future<void> deleteAccount(String id) async {
+    try {
+      final response = await _apiService.delete('/customer/$id');
+
+      if (response.statusCode == 201) {
+        await _authController.logout(); // Logout after successful deletion
+      } else {
+        final message =
+            jsonDecode(response.body)['msg'] ?? 'Account deletion failed';
+        throw Exception(message);
+      }
+    } catch (e) {
+      throw Exception('Account deletion failed: ${e.toString()}');
     }
   }
 }

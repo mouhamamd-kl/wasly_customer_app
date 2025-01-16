@@ -82,19 +82,18 @@ class MyApp extends StatelessWidget {
       builder: (context) => GetMaterialApp(
         onInit: _requestLocationPermission,
         initialBinding: CustomerBinding(),
-        home: SplashScreen(
-          nextScreen: OnboardingScreen(
-            onFinish: () async {
-              // Observe the login status and navigate accordingly
-              if (authController.isLoggedIn.value) {
-                Get.offAll(() => HomeScreen());
-              } else {
-                Get.offAll(() => LoginScreen());
-              }
-            },
-          ),
-          backgroundColor: AppColors.primaryBase,
-        ),
+        home: authController.isLoggedIn.value
+            ? HomeScreen()
+            : SplashScreen(
+                nextScreen: OnboardingScreen(
+                  onFinish: () async {
+                    // Observe the login status and navigate accordingly
+
+                    await Get.offAll(() => LoginScreen());
+                  },
+                ),
+                backgroundColor: AppColors.primaryBase,
+              ),
 
         // OrderScreen(),
         routingCallback: (routing) {

@@ -123,8 +123,7 @@ class _SignUpFormState extends State<SignUpForm> {
             },
           ),
           // const SizedBox(height: 8),
-          CustomPhoneField(
-              formKey: _formKey, phoneNumberController: _phoneNumberController),
+          CustomPhoneField(phoneNumberController: _phoneNumberController),
           // const SizedBox(height: 8),
           CustomPasswordField(
             controller: _passwordController,
