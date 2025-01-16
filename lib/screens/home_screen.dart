@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:wasly/controllers/nav_controller.dart';
+import 'package:wasly/controllers/services/category/category_service.dart';
+import 'package:wasly/controllers/services/store/store_service.dart';
 import 'package:wasly/core/constant_widgets/navigation_bar.dart';
-import 'package:wasly/core/test_data/testData.dart';
-import 'package:wasly/main.dart';
+import 'package:wasly/models/category.dart';
 import 'package:wasly/widgets/chip_list.dart';
 import 'package:wasly/widgets/custom_drawer.dart';
-import 'package:wasly_template/core/widgets/Border/custom_outline_input_border.dart';
-import 'package:wasly_template/core/widgets/card/product_card_container.dart';
-import 'package:wasly_template/core/widgets/general/price_range_slider.dart';
-import 'package:wasly_template/core/widgets/text/text_heading_7.dart';
+import 'package:wasly/widgets/home/latest_product.dart';
+import 'package:wasly/widgets/home/nearby_store.dart';
+import 'package:wasly/widgets/home/popular_products.dart';
+import 'package:wasly/widgets/home/section.dart';
+import 'package:wasly/widgets/search/search_widget.dart';
+
 import 'package:wasly_template/core/widgets/text/text_heading_9.dart';
-import 'package:wasly_template/core/widgets/text/text_paragraph_4.dart';
 import 'package:wasly_template/wasly_template.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,6 +29,15 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
   final controller = Get.find<NavController>();
+  late Future<List<Category>> _categoriesFuture;
+  final storeService = StoreService();
+  Category? selectedCategory;
+  @override
+  void initState() {
+    super.initState();
+    _categoriesFuture = CategoryService().getCategories();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,325 +105,47 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               spacing: 30,
               children: [
-                CustomSearchField(
-                  fillColor: Color(0xfff8fafc),
-                  controller: _searchController,
-                  hintText: "Search Products and Stores",
-                  border: CustomOutlineInputBorder.defaultBorder(
-                    borderRadius: 100,
-                    borderColor: AppColors.backgroundAccent,
-                  ),
-                  suffix: GestureDetector(
-                    onTap: () {
-                      Get.bottomSheet(
-                        SingleChildScrollView(
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(30),
-                                topRight: Radius.circular(30),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(30),
-                              child: Column(
-                                spacing: 20,
-                                children: <Widget>[
-                                  Container(
-                                    width: double.infinity,
-                                    child: Column(
-                                      spacing: 20,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        TextHeading9(
-                                          text: "Categories",
-                                          textAlign: TextAlign.start,
-                                        ),
-                                        SizedBox(
-                                          height: 50,
-                                          child: ChipList(
-                                            list: categories,
-                                            onCategorySelected: (category) {
-                                              print(
-                                                  'Selected category: $category');
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    width: double.infinity,
-                                    child: Column(
-                                      spacing: 20,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        TextHeading9(
-                                          text: "Sort By",
-                                          textAlign: TextAlign.start,
-                                        ),
-                                        SizedBox(
-                                          height: 50,
-                                          child: ChipList(
-                                            list: sort,
-                                            onCategorySelected: (category) {
-                                              print(
-                                                  'Selected category: $category');
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    width: double.infinity,
-                                    child: Column(
-                                      spacing: 20,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        TextHeading9(
-                                          text: "Price Range",
-                                          textAlign: TextAlign.start,
-                                        ),
-                                        PriceRangeSlider(
-                                          min: 0,
-                                          max: 1000,
-                                          initialValues:
-                                              const RangeValues(200, 800),
-                                          onChanged: (values) {
-                                            // Handle the range changes here
-                                            print(
-                                                'Min: \$${values.start.toStringAsFixed(0)}, Max: \$${values.end.toStringAsFixed(0)}');
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppColors
-                              .surfaceLight, // Set the background color
-                          shape: BoxShape.circle, // Make it round
-                        ),
-                        // Adjust the padding to control the size of the circle
-                        child: SvgPicture.asset(
-                          AppConstants.getIconPath("filter.svg"),
-                          height: 16,
-                          width: 16,
-                          fit: BoxFit.scaleDown,
-                        ),
-                      ),
-                    ),
-                  ),
-                  prefix: SvgPicture.asset(
-                    AppConstants.getIconPath("search.svg"),
-                    height: 16,
-                    width: 16,
-                    fit: BoxFit.scaleDown,
-                  ),
+                SearchFilterWidget(
+                  onSearchTap: () {},
+                  categoriesFuture: CategoryService().getCategories(),
+                  onFilterApplied:
+                      (searchText, selectedCategory, sortOption, priceRange) {
+                    print("Search Text: $searchText");
+                    print("Selected Category: $selectedCategory");
+                    print("Sort Option: $sortOption");
+                    print(
+                        "Price Range: ${priceRange.start} - ${priceRange.end}");
+                  },
                 ),
                 Container(
                   height: 50,
-                  child: ChipList(
-                    list: categories,
-                    onCategorySelected: (category) {
-                      // Handle category selection
-                      print('Selected category: $category');
-                    },
+                  child: getCategories(categoriesFuture: _categoriesFuture),
+                ),
+                Section(
+                  sectionTitle: "Near Stores",
+                  actionText: "view All",
+                  onActionTap: () {},
+                  child: NearbyStoresWidget(latitude: 100, longitude: 100),
+                ),
+                Section(
+                  sectionTitle: "Popular Products",
+                  actionText: "view All",
+                  onActionTap: () {},
+                  child: Container(
+                    width: double.infinity,
+                    height: 215,
+                    child: PopularProductsWidget(),
                   ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  spacing: 10,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(top: 0, left: 0),
-                          child: Text(
-                            "Near Stores",
-                            style: CustomResponsiveTextStyles.buttonText2
-                                .copyWith(color: AppColors.textPrimaryBase),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: Row(
-                            children: <Widget>[
-                              Text(
-                                "View All",
-                                style: CustomResponsiveTextStyles.buttonText2
-                                    .copyWith(
-                                  color: AppColors.primaryBase,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      width: double.infinity,
-                      height: 100,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 10,
-                        itemBuilder: (context, index) {
-                          return Row(
-                            children: [
-                              SmallCardContainer(
-                                  description: "this is the test description",
-                                  imagePath: AppConstants.getMockUpPath(
-                                      "product_image.png"),
-                                  name: "al fathon".toUpperCase()),
-                              if (index <
-                                  19) // Add space only between items, not after the last item
-                                const SizedBox(width: 16.0),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  spacing: 20,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(top: 0, left: 0),
-                          child: Text(
-                            "Popular Products",
-                            style: CustomResponsiveTextStyles.buttonText2
-                                .copyWith(color: AppColors.textPrimaryBase),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: Row(
-                            children: <Widget>[
-                              Text(
-                                "View All",
-                                style: CustomResponsiveTextStyles.buttonText2
-                                    .copyWith(
-                                  color: AppColors.primaryBase,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      width: double.infinity,
-                      height: 215,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 20,
-                        itemBuilder: (context, index) {
-                          return Row(
-                            children: [
-                              ProductCardContainer(
-                                imagePath: AppConstants.getMockUpPath(
-                                    "product_image.png"),
-                                productName: "Nike Air Mar",
-                                rate: 5.0,
-                                numberOfRating: 200,
-                                tags: "hele wef",
-                                deliveryTime: "20",
-                              ),
-                              if (index <
-                                  19) // Add space only between items, not after the last item
-                                const SizedBox(width: 16.0),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  spacing: 20,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(top: 0, left: 0),
-                          child: Text(
-                            "Latest Products",
-                            style: CustomResponsiveTextStyles.buttonText2
-                                .copyWith(color: AppColors.textPrimaryBase),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: Row(
-                            children: <Widget>[
-                              Text(
-                                "View All",
-                                style: CustomResponsiveTextStyles.buttonText2
-                                    .copyWith(
-                                  color: AppColors.primaryBase,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      width: double.infinity,
-                      height: 215,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 20,
-                        itemBuilder: (context, index) {
-                          return Row(
-                            children: [
-                              ProductCardContainer(
-                                imagePath: AppConstants.getMockUpPath(
-                                    "product_image.png"),
-                                productName: "Nike Air Mar",
-                                rate: 5.0,
-                                numberOfRating: 200,
-                                tags: "hele wef",
-                                deliveryTime: "20",
-                              ),
-                              if (index <
-                                  19) // Add space only between items, not after the last item
-                                const SizedBox(width: 16.0),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                Section(
+                  sectionTitle: "Latest Products",
+                  actionText: "view All",
+                  onActionTap: () {},
+                  child: Container(
+                    width: double.infinity,
+                    height: 215,
+                    child: LatestProductsWidget(),
+                  ),
                 ),
               ],
             ),
@@ -422,3 +155,171 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+class getCategories extends StatelessWidget {
+  const getCategories({
+    super.key,
+    required Future<List<Category>> categoriesFuture,
+  }) : _categoriesFuture = categoriesFuture;
+
+  final Future<List<Category>> _categoriesFuture;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Category>>(
+      future: _categoriesFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('No categories available'));
+        }
+
+        final categories = snapshot.data!;
+
+        return ChipList(
+          list: categories,
+          onCategorySelected: (selectedCategory) {
+            print('Selected category: $selectedCategory');
+          },
+        );
+      },
+    );
+  }
+}
+
+
+ // CustomSearchField(
+                //   fillColor: Color(0xfff8fafc),
+                //   controller: _searchController,
+                //   hintText: "Search Products and Stores",
+                //   border: CustomOutlineInputBorder.defaultBorder(
+                //     borderRadius: 100,
+                //     borderColor: AppColors.backgroundAccent,
+                //   ),
+                //   suffix: GestureDetector(
+                //     onTap: () {
+                //       Get.bottomSheet(
+                //         SingleChildScrollView(
+                //           child: Container(
+                //             width: double.infinity,
+                //             decoration: BoxDecoration(
+                //               color: Colors.white,
+                //               borderRadius: BorderRadius.only(
+                //                 topLeft: Radius.circular(30),
+                //                 topRight: Radius.circular(30),
+                //               ),
+                //             ),
+                //             child: Padding(
+                //               padding: EdgeInsets.all(30),
+                //               child: Column(
+                //                 spacing: 20,
+                //                 children: <Widget>[
+                //                   Container(
+                //                     width: double.infinity,
+                //                     child: Column(
+                //                       spacing: 20,
+                //                       crossAxisAlignment:
+                //                           CrossAxisAlignment.start,
+                //                       mainAxisAlignment:
+                //                           MainAxisAlignment.start,
+                //                       children: [
+                //                         TextHeading9(
+                //                           text: "Categories",
+                //                           textAlign: TextAlign.start,
+                //                         ),
+                //                         SizedBox(
+                //                           height: 50,
+                //                           child: getCategories(
+                //                             categoriesFuture: _categoriesFuture,
+                //                           ),
+                //                         ),
+                //                       ],
+                //                     ),
+                //                   ),
+                //                   Container(
+                //                     width: double.infinity,
+                //                     child: Column(
+                //                       spacing: 20,
+                //                       crossAxisAlignment:
+                //                           CrossAxisAlignment.start,
+                //                       mainAxisAlignment:
+                //                           MainAxisAlignment.start,
+                //                       children: [
+                //                         TextHeading9(
+                //                           text: "Sort By",
+                //                           textAlign: TextAlign.start,
+                //                         ),
+                //                         SizedBox(
+                //                           height: 50,
+                //                           child: SortList(
+                //                             list: sort,
+                //                             onCategorySelected: (category) {
+                //                               print('Selected sort: $category');
+                //                             },
+                //                           ),
+                //                         ),
+                //                       ],
+                //                     ),
+                //                   ),
+                //                   Container(
+                //                     width: double.infinity,
+                //                     child: Column(
+                //                       spacing: 20,
+                //                       crossAxisAlignment:
+                //                           CrossAxisAlignment.start,
+                //                       mainAxisAlignment:
+                //                           MainAxisAlignment.start,
+                //                       children: [
+                //                         TextHeading9(
+                //                           text: "Price Range",
+                //                           textAlign: TextAlign.start,
+                //                         ),
+                //                         PriceRangeSlider(
+                //                           min: 0,
+                //                           max: 1000,
+                //                           initialValues:
+                //                               const RangeValues(200, 800),
+                //                           onChanged: (values) {
+                //                             // Handle the range changes here
+                //                             print(
+                //                                 'Min: \$${values.start.toStringAsFixed(0)}, Max: \$${values.end.toStringAsFixed(0)}');
+                //                           },
+                //                         ),
+                //                       ],
+                //                     ),
+                //                   ),
+                //                 ],
+                //               ),
+                //             ),
+                //           ),
+                //         ),
+                //       );
+                //     },
+                //     child: Padding(
+                //       padding: const EdgeInsets.all(5.0),
+                //       child: Container(
+                //         decoration: BoxDecoration(
+                //           color: AppColors
+                //               .surfaceLight, // Set the background color
+                //           shape: BoxShape.circle, // Make it round
+                //         ),
+                //         // Adjust the padding to control the size of the circle
+                //         child: SvgPicture.asset(
+                //           AppConstants.getIconPath("filter.svg"),
+                //           height: 16,
+                //           width: 16,
+                //           fit: BoxFit.scaleDown,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                //   prefix: SvgPicture.asset(
+                //     AppConstants.getIconPath("search.svg"),
+                //     height: 16,
+                //     width: 16,
+                //     fit: BoxFit.scaleDown,
+                //   ),
+                // ),

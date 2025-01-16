@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:wasly/screens/delivery/delivery_history_screen.dart';
+import 'package:wasly/screens/profile/edit_profile_screen.dart';
 import 'package:wasly_template/core/widgets/text/text_heading_7.dart';
 import 'package:wasly_template/core/widgets/text/text_heading_9.dart';
 import 'package:wasly_template/core/widgets/text/text_paragraph_4.dart';
@@ -70,7 +73,9 @@ class CustomDrawer extends StatelessWidget {
                         AppConstants.getIconPath("drawer/profile.svg"),
                       ),
                       'Edit Profile',
-                      () {},
+                      () {
+                        Get.to(EditProfileScreen());
+                      },
                     ),
                     _buildDrawerItem(
                       SvgPicture.asset(
@@ -98,7 +103,9 @@ class CustomDrawer extends StatelessWidget {
                         AppConstants.getIconPath("drawer/calender.svg"),
                       ),
                       'Delivery History',
-                      () {},
+                      () {
+                        Get.to(DeliveryHistoryPage());
+                      },
                     ),
                     _buildDrawerItem(
                       SvgPicture.asset(

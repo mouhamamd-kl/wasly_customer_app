@@ -1,161 +1,12 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:get/get.dart';
-// import 'package:google_maps_flutter/google_maps_flutter.dart';
-// import 'package:geolocator/geolocator.dart';
-// import 'package:wasly_template/constants/data_constants.dart';
-// import 'package:wasly_template/core/styles/custom_color_styles.dart';
-// import 'package:wasly_template/core/styles/custom_responsive_text_styles.dart';
-// import 'package:wasly_template/helpers/app_constants.dart';
-// import 'package:wasly_template/wasly_template.dart';
-
-// class LocationPickerScreen extends StatefulWidget {
-//   @override
-//   _LocationPickerScreenState createState() => _LocationPickerScreenState();
-// }
-
-// class _LocationPickerScreenState extends State<LocationPickerScreen> {
-//   late Future<LatLng?> _locationFuture;
-//   late BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
-
-//   void customMarker() {
-//     BitmapDescriptor.asset(
-//       width: 35,
-//       height: 35,
-//       const ImageConfiguration(),
-//       AppConstants.getIconPath("you_location.png"),
-//     ).then((icon) {
-//       setState(() {
-//         customIcon = icon;
-//       });
-//     });
-//   }
-
-//   @override
-//   void initState() {
-//     _locationFuture = _getCurrentLocation();
-//     customMarker();
-//     super.initState();
-//   }
-
-//   Future<LatLng?> _getCurrentLocation() async {
-//     try {
-//       Position position = await Geolocator.getCurrentPosition(
-//         desiredAccuracy: LocationAccuracy.high,
-//       );
-//       return LatLng(position.latitude, position.longitude);
-//     } catch (e) {
-//       print("Error getting location: $e");
-//       return null;
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: FutureBuilder<LatLng?>(
-//         future: _locationFuture,
-//         builder: (context, snapshot) {
-//           if (snapshot.connectionState == ConnectionState.waiting) {
-//             return Center(child: CircularProgressIndicator());
-//           } else if (snapshot.hasError || !snapshot.hasData) {
-//             return Center(
-//               child: Text('Error retrieving location or location unavailable'),
-//             );
-//           }
-
-//           final LatLng? currentPosition = snapshot.data;
-
-//           return Stack(
-//             children: [
-//               // Google Map
-//               GoogleMap(
-//                 onMapCreated: (GoogleMapController controller) {
-//                   controller.setMapStyle(DataConstants.mapStyle);
-//                 },
-//                 initialCameraPosition: CameraPosition(
-//                   target: currentPosition ?? LatLng(37.7749, -122.4194),
-//                   zoom: 15,
-//                 ),
-//                 myLocationButtonEnabled: false,
-//                 zoomControlsEnabled: false,
-//                 markers: currentPosition != null
-//                     ? {
-//                         Marker(
-//                           draggable: true,
-//                           onDrag: (value) {
-//                             print(value);
-//                           },
-//                           markerId: MarkerId('selected_location'),
-//                           position: currentPosition,
-//                           infoWindow: const InfoWindow(
-//                             title: "this is your current location",
-//                             snippet: "Move to edit location",
-//                           ),
-//                           icon: customIcon,
-//                         ),
-//                       }
-//                     : {},
-//               ),
-//               Positioned(
-//                 bottom: 0,
-//                 left: 0,
-//                 right: 0,
-//                 child: Container(
-//                   child: Column(
-//                     mainAxisSize: MainAxisSize.min,
-//                     children: [
-//                       // Search bar
-//                       Container(
-//                         width: Get.width * 0.85,
-//                         padding: EdgeInsets.symmetric(
-//                           horizontal: 16,
-//                         ),
-//                         decoration: BoxDecoration(
-//                           color: Colors.white,
-//                           borderRadius: BorderRadius.circular(30),
-//                         ),
-//                         child: TextField(
-//                           decoration: InputDecoration(
-//                             hintText: 'Search your location',
-//                             hintStyle: CustomResponsiveTextStyles.fieldText2
-//                                 .copyWith(color: AppColors.textSecondaryBase),
-//                             border: InputBorder.none,
-//                             // icon: SvgPicture.asset(
-//                             //   AppConstants.getIconPath("search"),
-//                             // ),
-//                           ),
-//                         ),
-//                       ),
-//                       SizedBox(height: 16),
-//                       // Select Location button
-//                       SizedBox(
-//                         width: double.infinity,
-//                         child: CustomTextButtonActive(
-//                           text: "Select Location",
-//                           onClick: () {
-//                             // Handle location selection
-//                           },
-//                           radius: 0,
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_place_plus/google_place_plus.dart';
+import 'package:wasly/controllers/routing/rout_observer.dart';
+import 'package:wasly/screens/auth/signup_screen.dart';
 import 'package:wasly/screens/home_screen.dart';
+import 'package:wasly/screens/location/add_new_location_screen.dart';
 import 'package:wasly_template/constants/data_constants.dart';
 import 'package:wasly_template/core/styles/custom_color_styles.dart';
 import 'package:wasly_template/core/styles/custom_responsive_text_styles.dart';
@@ -163,6 +14,11 @@ import 'package:wasly_template/helpers/app_constants.dart';
 import 'package:wasly_template/wasly_template.dart';
 
 class LocationPickerScreen extends StatefulWidget {
+  final LatLng? initialLocation;
+  const LocationPickerScreen({
+    Key? key,
+    this.initialLocation,
+  }) : super(key: key);
   @override
   _LocationPickerScreenState createState() => _LocationPickerScreenState();
 }
@@ -179,9 +35,20 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   @override
   void initState() {
     super.initState();
-    _locationFuture = _getCurrentLocation();
+    _locationFuture = _initializeLocation();
     customMarker();
     googlePlace = GooglePlace("AIzaSyAUiTJnq3Tme_Op3bVWyVyAf8VwANRC4QY");
+  }
+
+  Future<LatLng?> _initializeLocation() async {
+    // If initial location is provided, use it
+    if (widget.initialLocation != null) {
+      _selectedLocation = widget.initialLocation;
+      return widget.initialLocation;
+    }
+
+    // Otherwise, get current location
+    return _getCurrentLocation();
   }
 
   void customMarker() {
@@ -362,8 +229,19 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 child: CustomTextButtonActive(
                   text: "Select Location",
                   onClick: () {
-                    if (_selectedLocation != null) {
-                      Get.to(() => HomeScreen());
+                    if (_selectedLocation == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Please select a location')),
+                      );
+
+                      // Get.back(result: _selectedLocation);
+                    }
+                    if (Get.previousRoute == "AddNewAddressScreen") {
+                      Get.back(result: _selectedLocation);
+                    } else {
+                      Get.to(AddNewAddressScreen(
+                        selectedLocation: _selectedLocation!,
+                      ));
                     }
                   },
                   radius: 30,

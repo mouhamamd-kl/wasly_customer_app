@@ -49,6 +49,16 @@ dependencies:
   flutter_polyline_points: ^2.1.0
   geolocator: ^13.0.2
   google_place_plus: ^1.0.0
+  hero_here: ^1.0.1
+  permission_handler: ^11.3.1
+  geocoding: ^3.0.0
+  geocode: ^1.0.3
+  image_picker: ^1.1.2
+  flutter_pannable_rating_bar: ^2.7.2+1
+  animated_size_and_fade: ^5.0.3
+  fl_chart: ^0.70.1
+  flutter_secure_storage: ^9.2.4
+  dio: ^5.7.0
 
 dev_dependencies:
   flutter_test:

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:wasly/controllers/nav_controller.dart';
+import 'package:wasly/controllers/services/category/category_service.dart';
 import 'package:wasly/core/constant_widgets/navigation_bar.dart';
-import 'package:wasly_template/core/widgets/Border/custom_outline_input_border.dart';
+import 'package:wasly/widgets/favorutite_product_card.dart';
+import 'package:wasly/widgets/search/search_widget.dart';
 import 'package:wasly_template/wasly_template.dart';
 
 class FavouriteScreen extends StatefulWidget {
@@ -14,16 +15,27 @@ class FavouriteScreen extends StatefulWidget {
 }
 
 class _FavouriteScreenState extends State<FavouriteScreen> {
-  // Create a GlobalKey for the Scaffold
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
   final controller = Get.find<NavController>();
+  final List<Map<String, String>> products = [
+    {"name": "Asus mouse", "image": "https://i.imgur.com/0D1AgqE.png"},
+    {"name": "Asus mouse", "image": "https://i.imgur.com/0D1AgqE.png"},
+    {"name": "Asus mouse", "image": "https://i.imgur.com/0D1AgqE.png"},
+    {"name": "Asus mouse", "image": "https://i.imgur.com/0D1AgqE.png"},
+    {"name": "Asus mouse", "image": "https://i.imgur.com/0D1AgqE.png"},
+    {"name": "Asus mouse", "image": "https://i.imgur.com/0D1AgqE.png"},
+    {"name": "Asus mouse", "image": "https://i.imgur.com/0D1AgqE.png"},
+    {"name": "Asus mouse", "image": "https://i.imgur.com/0D1AgqE.png"},
+    {"name": "Asus mouse", "image": "https://i.imgur.com/0D1AgqE.png"}
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey, // Assign the key to the Scaffold
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("favourite Screen"),
+        centerTitle: true,
       ),
       bottomNavigationBar: Obx(
         () => CustomBottomNavigationBar(
@@ -33,77 +45,49 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
         ),
       ),
       body: SafeArea(
-          child: Container(
-        padding: EdgeInsets.all(16.0),
-        decoration: BoxDecoration(color: Colors.white),
-        child: Column(
-          spacing: 50,
-          children: [
-            // CustomSearchField(
-            //   fillColor: Color(0xfff8fafc),
-            //   controller: _searchController,
-            //   hintText: "Search Products and Stores",
-            //   border: CustomOutlineInputBorder.defaultBorder(
-            //     borderRadius: 100,
-            //     borderColor: AppColors.backgroundAccent,
-            //   ),
-            //   suffix: Container(
-            //     // decoration: BoxDecoration(
-            //     //   color: AppColors.surfaceLight,
-            //     //   borderRadius: BorderRadius.circular(50),
-            //     // ),
-            //     // padding: EdgeInsets.all(10),
-            //     child: SvgPicture.asset(
-            //       AppConstants.getIconPath("filter.svg"),
-
-            //       height: 16,
-            //       width: 16,
-            //       fit: BoxFit.scaleDown,
-            //     ),
-            //   ),
-            //   prefix: SvgPicture.asset(
-            //     AppConstants.getIconPath(
-            //       "search.svg",
-            //     ),
-            //     height: 16,
-            //     width: 16,
-            //     fit: BoxFit.scaleDown,
-            //   ),
-            // )
-            CustomSearchField(
-              fillColor: Color(0xfff8fafc),
-              controller: _searchController,
-              hintText: "Search Products and Stores",
-              border: CustomOutlineInputBorder.defaultBorder(
-                borderRadius: 100,
-                borderColor: AppColors.backgroundAccent,
-              ),
-              suffix: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceLight, // Set the background color
-                    shape: BoxShape.circle, // Make it round
-                  ),
-                  // Adjust the padding to control the size of the circle
-                  child: SvgPicture.asset(
-                    AppConstants.getIconPath("filter.svg"),
-                    height: 16,
-                    width: 16,
-                    fit: BoxFit.scaleDown,
+        child: Container(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                SearchFilterWidget(
+                  onSearchTap: () {},
+                  categoriesFuture: CategoryService().getCategories(),
+                  onFilterApplied:
+                      (searchText, selectedCategory, sortOption, priceRange) {
+                    print("Search Text: $searchText");
+                    print("Selected Category: $selectedCategory");
+                    print("Sort Option: $sortOption");
+                    print(
+                        "Price Range: ${priceRange.start} - ${priceRange.end}");
+                  },
+                ),
+                SizedBox(
+                    height:
+                        20), // Add some spacing between the search field and the grid
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Wrap(
+                      spacing: 16, // Horizontal spacing between items
+                      runSpacing: 16, // Vertical spacing between items
+                      children: products.map((product) {
+                        return SizedBox(
+                          width: MediaQuery.of(context).size.width / 2 -
+                              24, // Half the screen width minus padding
+                          child: FavorutiteProductCard(
+                            name: product["name"]!,
+                            imagePath: product["image"]!,
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ),
-              ),
-              prefix: SvgPicture.asset(
-                AppConstants.getIconPath("search.svg"),
-                height: 16,
-                width: 16,
-                fit: BoxFit.scaleDown,
-              ),
-            )
-          ],
+              ],
+            ),
+          ),
         ),
-      )),
+      ),
     );
   }
 }

@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:wasly/controllers/nav_controller.dart';
 import 'package:wasly/core/constant_widgets/navigation_bar.dart';
+import 'package:wasly/screens/payment/payment_screen.dart';
+import 'package:wasly/widgets/price_row.dart';
 import 'package:wasly_template/core/widgets/Border/custom_outline_input_border.dart';
 import 'package:wasly_template/wasly_template.dart';
 
@@ -33,8 +35,10 @@ class _CartScreenState extends State<CartScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: SvgPicture.asset(
-                AppConstants.getCustomerBottomNavigationBarIcons(
-                    "cart_active.svg")),
+              AppConstants.getCustomerBottomNavigationBarIcons(
+                "cart_active.svg",
+              ),
+            ),
           ),
         ],
       ),
@@ -58,13 +62,16 @@ class _CartScreenState extends State<CartScreen> {
 
                 const PromoCodeSection(),
 
-                const CartSummary(),
+                PriceRow(
+                    label: "Total (3 Items):", value: "\$63.00", isTotal: true),
 
                 Container(
                   width: double.infinity,
                   child: CustomTextButtonActive(
                     text: "Continue",
-                    onClick: () {},
+                    onClick: () {
+                      Get.to(() => PaymentScreen());
+                    },
                   ),
                 ),
               ],
@@ -200,35 +207,3 @@ class PromoCodeSection extends StatelessWidget {
 }
 
 // cart_summary.dart
-class CartSummary extends StatelessWidget {
-  const CartSummary({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Total:',
-              style: CustomResponsiveTextStyles.paragraph1.copyWith(
-                color: AppColors.textSecondaryBase,
-              ),
-            ),
-            Text(
-              '\$63.00',
-              style: CustomResponsiveTextStyles.headingH9.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppColors.primaryBase,
-                fontSize: 18,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}

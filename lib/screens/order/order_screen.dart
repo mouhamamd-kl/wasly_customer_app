@@ -18,6 +18,38 @@ class _OrderScreenState extends State<OrderScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
   final controller = Get.find<NavController>();
+  // Sample product data
+  final List<Map<String, dynamic>> products = [
+    {
+      'name': 'Wireless Headphones',
+      'imageUrl': 'https://i.imgur.com/0D1AgqE.png',
+      'price': 99.99,
+      'itemCount': 1,
+      'status': 'pending',
+      'rate': 4.5,
+      'numberOfRating': 128
+    },
+    {
+      'name': 'Smart Watch',
+      'imageUrl': 'https://i.imgur.com/0D1AgqE.png',
+      'price': 199.99,
+      'itemCount': 2,
+      'status': 'delivered',
+      'rate': 4.8,
+      'numberOfRating': 256
+    },
+    {
+      'name': 'Bluetooth Speaker',
+      'imageUrl': 'https://i.imgur.com/0D1AgqE.png',
+      'price': 79.99,
+      'itemCount': 1,
+      'status': 'pending',
+      'rate': 4.2,
+      'numberOfRating': 89
+    },
+    // Add more products as needed
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,43 +69,12 @@ class _OrderScreenState extends State<OrderScreen> {
         padding: EdgeInsets.all(16.0),
         decoration: BoxDecoration(color: Colors.white),
         child: Column(
-          spacing: 50,
+          spacing: 20,
           children: [
-            // CustomSearchField(
-            //   fillColor: Color(0xfff8fafc),
-            //   controller: _searchController,
-            //   hintText: "Search Products and Stores",
-            //   border: CustomOutlineInputBorder.defaultBorder(
-            //     borderRadius: 100,
-            //     borderColor: AppColors.backgroundAccent,
-            //   ),
-            //   suffix: Container(
-            //     // decoration: BoxDecoration(
-            //     //   color: AppColors.surfaceLight,
-            //     //   borderRadius: BorderRadius.circular(50),
-            //     // ),
-            //     // padding: EdgeInsets.all(10),
-            //     child: SvgPicture.asset(
-            //       AppConstants.getIconPath("filter.svg"),
-
-            //       height: 16,
-            //       width: 16,
-            //       fit: BoxFit.scaleDown,
-            //     ),
-            //   ),
-            //   prefix: SvgPicture.asset(
-            //     AppConstants.getIconPath(
-            //       "search.svg",
-            //     ),
-            //     height: 16,
-            //     width: 16,
-            //     fit: BoxFit.scaleDown,
-            //   ),
-            // )
             CustomSearchField(
               fillColor: Color(0xfff8fafc),
               controller: _searchController,
-              hintText: "Search Products and Stores",
+              hintText: "Search Order Products",
               border: CustomOutlineInputBorder.defaultBorder(
                 borderRadius: 100,
                 borderColor: AppColors.backgroundAccent,
@@ -100,7 +101,25 @@ class _OrderScreenState extends State<OrderScreen> {
                 width: 16,
                 fit: BoxFit.scaleDown,
               ),
-            )
+            ),
+            // Product List
+            Expanded(
+              child: ListView.builder(
+                itemCount: products.length,
+                itemBuilder: (context, index) {
+                  final product = products[index];
+                  return ExpandingProductCard(
+                    name: product['name'],
+                    imageUrl: product['imageUrl'],
+                    price: product['price'],
+                    itemCount: product['itemCount'],
+                    status: product['status'],
+                    rate: product['rate'],
+                    numberOfRating: product['numberOfRating'],
+                  );
+                },
+              ),
+            ),
           ],
         ),
       )),

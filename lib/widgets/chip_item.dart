@@ -48,9 +48,8 @@ class ChipItem extends StatelessWidget {
                   color: AppColors.surfaceLight,
                   borderRadius: BorderRadius.circular(100),
                 ),
-                child: icon.isImageFileName
-                    ? Image.asset(icon)
-                    : SvgPicture.asset(icon),
+                child:
+                    icon.isURL ? Image.network(icon) : SvgPicture.asset(icon),
               ),
               Text(
                 label,

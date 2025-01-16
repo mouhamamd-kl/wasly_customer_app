@@ -31,12 +31,24 @@ final List<Map<String, dynamic>> categories = [
 final List<Map<String, dynamic>> sort = [
   {
     'icon': AppConstants.getSortPath("money_1.svg"),
-    'label': 'High Price',
+    'label': 'high_to_low',
     'color': AppColors.textPrimaryBase,
   },
   {
     'icon': AppConstants.getSortPath("money_2.svg"),
-    'label': 'Low Price',
+    'label': 'low_to_high',
     'color': AppColors.textPrimaryBase,
   },
+];
+final List<Map<String, dynamic>> locationLabelIcons = [
+  {
+    "icon": AppConstants.getLabelLocationPath("home.png"),
+    "label": "Home",
+    "color": AppColors.primaryBase,
+  },
+  {
+    "icon": AppConstants.getLabelLocationPath("work.png"),
+    "label": "Office",
+    "color": AppColors.primaryBase,
+  }
 ];

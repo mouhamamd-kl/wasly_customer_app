@@ -4,6 +4,8 @@ import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:get/get.dart';
 import 'package:wasly/screens/auth/signup_screen.dart';
 import 'package:wasly/screens/auth/starting_location_screen.dart';
+import 'package:wasly/screens/home_screen.dart';
+import 'package:wasly/screens/location/location_picker_screen.dart';
 import 'package:wasly_template/wasly_template.dart';
 
 class VerificationScreen extends StatelessWidget {
@@ -193,7 +195,7 @@ class _SignInFormState extends State<SignInForm> {
                 text: "Continue",
                 onClick: _isOtpValid
                     ? () async {
-                        await Get.to(() => StartingLocationScreen());
+                        await Get.to(() => HomeScreen());
                       }
                     : null, // Disable the button if OTP is invalid
               ),
