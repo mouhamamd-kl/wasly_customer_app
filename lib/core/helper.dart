@@ -12,4 +12,8 @@ class Helper {
     // Create and return the color
     return Color.fromRGBO(red, green, blue, opacity);
   }
+
+  static bool intToBool(int value) {
+    return value == 1 ? true : false;
+  }
 }

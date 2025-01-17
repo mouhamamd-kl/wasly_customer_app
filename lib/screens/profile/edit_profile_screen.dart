@@ -327,6 +327,8 @@ import 'package:wasly/controllers/services/auth/customer_auth_service.dart';
 import 'package:wasly/models/customer.dart';
 
 import 'package:image_picker/image_picker.dart';
+import 'package:wasly/screens/auth/login_screen.dart';
+import 'package:wasly/widgets/gender_widget.dart';
 import 'package:wasly_template/core/styles/custom_color_styles.dart';
 import 'package:wasly_template/core/widgets/Border/custom_outline_input_border.dart';
 import 'package:wasly_template/core/widgets/text/text_button_1.dart';
@@ -385,8 +387,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _handleLogout() async {
     try {
       await _authService.logout();
-      Get.offAllNamed('/login'); // Navigate to login screen
+      Get.offAll(LoginScreen()); // Navigate to login screen
     } catch (e) {
+      print(e);
       Get.snackbar('Error', 'Failed to logout: ${e.toString()}');
     }
   }
@@ -406,6 +409,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       await _authService.updateCustomer(currentUser!.id!, updateData);
       Get.snackbar('Success', 'Profile updated successfully');
     } catch (e) {
+      print(e);
       Get.snackbar('Error', 'Failed to update profile: ${e.toString()}');
     }
   }
@@ -679,37 +683,5 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     emailController.dispose();
     phoneNumberController.dispose();
     super.dispose();
-  }
-}
-
-class GenderWidget extends StatelessWidget {
-  const GenderWidget({
-    super.key,
-    required this.gender,
-    required this.icon,
-  });
-
-  final String gender;
-  final String icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SvgPicture.asset(
-          icon,
-          width: 20,
-          height: 20,
-        ),
-        const SizedBox(width: 10),
-        Text(
-          gender,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.black87,
-          ),
-        ),
-      ],
-    );
   }
 }

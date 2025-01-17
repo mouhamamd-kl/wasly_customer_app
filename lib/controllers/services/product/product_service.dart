@@ -22,6 +22,7 @@ class ProductService {
   Future<List<Product>> getPopularProducts() async {
     final response = await _apiService.get('/product/popular');
     final List products = jsonDecode(response.body)['data'];
+    print(products);
     return products.map((json) => Product.fromJson(json)).toList();
   }
 

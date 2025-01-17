@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:wasly/controllers/services/auth/customer_auth_service.dart';
+import 'package:wasly/models/customer.dart';
 import 'package:wasly/screens/delivery/delivery_history_screen.dart';
 import 'package:wasly/screens/profile/edit_profile_screen.dart';
 import 'package:wasly_template/core/widgets/text/text_heading_7.dart';
@@ -8,8 +10,24 @@ import 'package:wasly_template/core/widgets/text/text_heading_9.dart';
 import 'package:wasly_template/core/widgets/text/text_paragraph_4.dart';
 import 'package:wasly_template/wasly_template.dart';
 
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer extends StatefulWidget {
   const CustomDrawer({super.key});
+
+  @override
+  State<CustomDrawer> createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends State<CustomDrawer> {
+  final CustomerAuthService _authService = CustomerAuthService();
+
+  Future<Customer>? _customerFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch customer info on widget load
+    _customerFuture = _authService.getCustomerInfo();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,42 +42,68 @@ class CustomDrawer extends StatelessWidget {
               // User Profile Section
               Container(
                 padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    // User Profile Image
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundImage: AssetImage(
-                        AppConstants.getIconPath("drawer/user_icon.svg"),
-                      ), // Replace with your image
-                    ),
-                    const SizedBox(width: 10),
-                    // User Name and Email
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                child: FutureBuilder<Customer>(
+                  future: _customerFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      // Show a loading state while fetching the customer data
+                      return const CircleAvatar(
+                        radius: 30,
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (snapshot.hasError) {
+                      // Show an error state if fetching fails
+                      return CircleAvatar(
+                        radius: 30,
+                        child: Icon(Icons.error, color: Colors.red),
+                      );
+                    } else if (snapshot.hasData) {
+                      // Show the fetched customer data
+                      final customer = snapshot.data!;
+                      print(customer.toJson());
+                      return Row(
                         children: [
-                          const TextHeading7(
-                            text: 'Robert Downey',
-                            textAlign: TextAlign.start,
+                          // User Profile Image
+                          CircleAvatar(
+                            radius: 30,
+                            backgroundImage: NetworkImage(customer.photo!),
                           ),
-                          const TextParagraph4(
-                            text: 'ulhut@gmail.com',
+                          const SizedBox(width: 10),
+                          // User Name and Email
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TextHeading7(
+                                  text: customer.firstName,
+                                  textAlign: TextAlign.start,
+                                ),
+                                TextParagraph4(
+                                  text: customer.email,
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Close Button
+                          IconButton(
+                            icon: SvgPicture.asset(
+                              AppConstants.getIconPath("arrow_down.svg"),
+                              height: 10, // Adjust icon size as needed
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context); // Close the drawer
+                            },
                           ),
                         ],
-                      ),
-                    ),
-                    // Close Button
-                    IconButton(
-                      icon: SvgPicture.asset(
-                        AppConstants.getIconPath("arrow_down.svg"),
-                        height: 10, // Adjust icon size as needed
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context); // Close the drawer
-                      },
-                    ),
-                  ],
+                      );
+                    } else {
+                      // Fallback for unexpected states
+                      return const CircleAvatar(
+                        radius: 30,
+                        child: Icon(Icons.person),
+                      );
+                    }
+                  },
                 ),
               ),
               // Menu Items Section

@@ -34,8 +34,8 @@ class CustomerAuthService {
     try {
       final response =
           await _apiService.post('/customer/register', data: signupData);
-
-      if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['data'];
+      if (response.statusCode == 201) {
         final data = jsonDecode(response.body)['data'];
         await _authController.login(data['token']);
         return Customer.fromJson(data['account']);

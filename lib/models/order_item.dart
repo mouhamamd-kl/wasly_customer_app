@@ -34,7 +34,7 @@ class OrderItem {
           ? OrderStatus.fromJson(json['order_status'])
           : null,
       quantity: json['quantity'],
-      price: json['price'].toDouble(),
+      price: json['price'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );

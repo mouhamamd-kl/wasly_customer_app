@@ -15,8 +15,8 @@ class CartProduct {
   factory CartProduct.fromJson(Map<String, dynamic> json) {
     return CartProduct(
       product: Product.fromJson(json['product']),
-      count: json['count'],
-      subtotal: json['subtotal'].toDouble(),
+      count: int.tryParse(json['count'])!,
+      subtotal: json['subtotal'],
     );
   }
 

@@ -55,9 +55,9 @@ class CartService {
   }
 
   /// Fetch cart products for the user
-  Future<Map<String, dynamic>> getCartProducts({int page = 1}) async {
+  Future<Map<String, dynamic>> getCartProducts() async {
     try {
-      final response = await _apiService.get('/cart/products?page=$page');
+      final response = await _apiService.get('/cart/products');
 
       if (response.statusCode != 200) {
         final message = jsonDecode(response.body)['message'] ??
@@ -66,12 +66,10 @@ class CartService {
       }
 
       final data = jsonDecode(response.body)['data'];
-      final products = (data['data'] as List)
-          .map((json) => CartProduct.fromJson(json))
-          .toList();
+
       final total = data['total'];
 
-      return {'products': products, 'total': total};
+      return {'products': data['data'], 'total': total};
     } catch (e) {
       throw Exception('Failed to fetch cart products: $e');
     }

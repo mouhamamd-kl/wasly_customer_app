@@ -6,8 +6,8 @@ class CustomLocation {
 
   factory CustomLocation.fromJson(Map<String, dynamic> json) {
     return CustomLocation(
-      latitude: json['latitude'].toDouble(),
-      longitude: json['longitude'].toDouble(),
+      latitude: json['latitude'],
+      longitude: json['longitude'],
     );
   }
 

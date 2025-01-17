@@ -14,7 +14,7 @@ class Rating {
   factory Rating.fromJson(Map<String, dynamic> json) {
     return Rating(
       id: json['id'],
-      rating: json['rating'].toDouble(),
+      rating: json['rating'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );

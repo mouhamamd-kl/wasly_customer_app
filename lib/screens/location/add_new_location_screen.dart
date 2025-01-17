@@ -5,7 +5,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:wasly/controllers/routing/rout_observer.dart';
+import 'package:wasly/controllers/services/customerAddress/customer_address_service.dart';
 import 'package:wasly/core/test_data/testData.dart';
+import 'package:wasly/models/customer_address.dart';
 import 'package:wasly/screens/auth/signup_screen.dart';
 import 'package:wasly/screens/home_screen.dart';
 import 'package:wasly/screens/location/location_picker_screen.dart';
@@ -242,13 +244,25 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
               width: double.infinity,
               child: CustomTextButtonActive(
                 text: "Add Now",
-                onClick: () {
+                onClick: () async {
                   print(RouteObserver2.routeHistory);
                   if (RouteObserver2.routeHistory.contains("/SignupScreen")) {
-                    Get.offAll(HomeScreen());
-                    RouteObserver2.clearHistory();
+                    await CustomerAddressService().createAddress({
+                      'label': selectedLabel,
+                      'longitude': _currentLocation.longitude,
+                      'latitude': _currentLocation.latitude,
+                      'is_default': 1
+                    });
+                    // Get.offAll(HomeScreen());
+                    // RouteObserver2.clearHistory();
                   } else {
-                    Get.until((route) => Get.currentRoute == '/PaymentScreen');
+                    await CustomerAddressService().createAddress({
+                      'label': selectedLabel,
+                      'longitude': _currentLocation.longitude,
+                      'latitude': _currentLocation.latitude,
+                      'is_default': 0
+                    });
+                    // Get.until((route) => Get.currentRoute == '/PaymentScreen');
                   }
                 },
               ),

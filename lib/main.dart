@@ -10,6 +10,7 @@ import 'package:wasly/controllers/routing/rout_observer.dart';
 import 'package:wasly/controllers/services/storage/secure_storage_service.dart';
 import 'package:wasly/screens/auth/login_screen.dart';
 import 'package:wasly/screens/auth/starting_screen.dart';
+import 'package:wasly/screens/bayer/product_details.dart';
 import 'package:wasly/screens/delivery/delivery_history_screen.dart';
 import 'package:wasly/screens/favourite/favourite_screen.dart';
 import 'package:wasly/screens/home_screen.dart';
@@ -153,6 +154,16 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(title: const Text('Home')),
       body: Center(
         child: ExpandingProductCard(
+            onDoubleTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return Center();
+                  },
+                ),
+              );
+            },
             name: "Asus Mouse",
             imageUrl: "https://i.imgur.com/0D1AgqE.png",
             price: 299.0,

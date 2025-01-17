@@ -1,3 +1,5 @@
+import 'package:wasly/core/helper.dart';
+
 import 'category.dart';
 import 'store.dart';
 
@@ -36,14 +38,13 @@ class Product {
       photo: json['photo'],
       description: json['description'],
       stockQuantity: json['stock_quantity'],
-      price: json['price'].toDouble(),
-      averageRating: json['average_rating'].toDouble(),
-      isActive: json['is_active'],
+      price: double.tryParse(json['price'])!,
+      averageRating: 5.0,
+      isActive: Helper.intToBool(json['is_active']),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
-      category:
-          json['category'] != null ? Category.fromJson(json['category']) : null,
-      store: json['store'] != null ? Store.fromJson(json['store']) : null,
+      category: Category.fromJson(json['category']),
+      store: Store.fromJson(json['store']),
     );
   }
 
